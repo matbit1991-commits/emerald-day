@@ -68,6 +68,54 @@ function nextImage(){currentIndex=(currentIndex+1)%galleryImages.length;renderGa
 function nextEmeraldDay(){const now=new Date();let year=now.getFullYear();let target=new Date(year,6,5,0,0,0);if(now>target)target=new Date(year+1,6,5,0,0,0);return target}
 function updateCountdown(){const now=new Date();const target=nextEmeraldDay();let diff=target-now;if(diff<0)diff=0;const d=Math.floor(diff/(1000*60*60*24));const h=Math.floor(diff/(1000*60*60)%24);const m=Math.floor(diff/(1000*60)%60);const s=Math.floor(diff/1000%60);document.getElementById("days").textContent=d;document.getElementById("hours").textContent=String(h).padStart(2,"0");document.getElementById("minutes").textContent=String(m).padStart(2,"0");document.getElementById("seconds").textContent=String(s).padStart(2,"0")}
 loadGalleryImages();updateCountdown();setInterval(updateCountdown,1000);
+ 
+  let quotesData = [];
+let currentQuoteIndex = 0;
+
+async function loadQuotes() {
+  try {
+    const response = await fetch("quotes.json");
+    quotesData = await response.json();
+
+    if (!quotesData || quotesData.length === 0) return;
+
+    currentQuoteIndex =
+      Math.floor(Math.random() * quotesData.length);
+
+    showQuote(currentQuoteIndex);
+
+    setInterval(() => {
+      currentQuoteIndex =
+        (currentQuoteIndex + 1) % quotesData.length;
+
+      showQuote(currentQuoteIndex);
+    }, 15000);
+
+  } catch (error) {
+    console.log("Could not load quotes.json");
+  }
+}
+
+function showQuote(index) {
+  const quoteBox = document.querySelector(".quote");
+
+  if (!quoteBox) return;
+
+  quoteBox.innerHTML = `
+    ${quotesData[index].quote}
+    <br><br>
+    <span style="
+      font-size:14px;
+      letter-spacing:1px;
+      color:#68766d;
+      text-transform:uppercase;
+    ">
+      ${quotesData[index].label}
+    </span>
+  `;
+}
+
+loadQuotes();
 </script>
 </body>
 </html>
